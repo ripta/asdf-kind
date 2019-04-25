@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ASDF_INSTALL_TYPE=${ASDF_INSTALL_TYPE:-version}
+TMPDIR=${TMPDIR:-/tmp}
+
+[[ -n "$ASDF_INSTALL_VERSION" ]] || (>&2 echo "Missing ASDF_INSTALL_VERSION" && exit 1)
+[[ -n "$ASDF_INSTALL_PATH" ]]    || (>&2 echo "Missing ASDF_INSTALL_PATH"    && exit 1)
+
+install-kind() {
+  local install_type=$1
+  local version=$2
+  local install_path=$3
+
+  local bindir_path="${install_path}/bin"
+  local bin_path="${bindir_path}/kind"
+  local download_url="$(get-url $version)"
+
+  [[ "${install_type}" = "version" ]] || (>&2 echo "Don't know how to install ${install_type} '${version}'. Expected to install a specific version number." && exit 1)
+
+  echo "Downloading kind from ${download_url}"
+  mkdir -p "$bindir_path"
+  curl -sL -o "${bin_path}" "${download_url}" || (>&2 echo "Cannot download kind" && exit 2)
+  chmod +x "${bin_path}"
+}
+
+get-arch() {
+  uname -s | tr '[:upper:]' '[:lower:]'
+}
+
+get-url() {
+  local version=$1
+  local arch="$(get-arch)"
+  echo "https://github.com/kubernetes-sigs/kind/releases/download/${version}/kind-${arch}-amd64"
+}
+
+install-kind $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
