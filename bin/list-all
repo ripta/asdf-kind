@@ -16,7 +16,7 @@ function sort_versions() {
 
 versions=$(eval "$cmd $gh_releases_url" \
   | grep -oE "tag_name\": *\".{1,15}\"," \
-  | sed 's/tag_name\": *\"//;s/\",//' \
+  | sed 's/tag_name\": *\"//;s/\",//;s/^v//' \
   | sort_versions)
 echo $versions
 
