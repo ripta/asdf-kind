@@ -21,7 +21,7 @@ install-kind() {
 
   echo "Downloading kind from ${download_url}"
   mkdir -p "$bindir_path"
-  curl -sL -o "${bin_path}" "${download_url}" || (>&2 echo "Cannot download kind" && exit 2)
+  curl -fsSL -o "${bin_path}" "${download_url}" || (>&2 echo "Cannot download kind" && exit 2)
   chmod +x "${bin_path}"
 }
 
